@@ -22,11 +22,15 @@ type Location struct {
 
 
 type Config struct {
-	MONGODB struct{
+	Mongodb struct{
 		User string `yaml:"user"`
 		Password string `yaml:"password"`
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
+	}
+	Jwt struct{
+		Secret string `yaml:"secret"`
+		ExpireIn int `yaml:"expire_in"`
 	}
 }
 
@@ -55,9 +59,9 @@ func main()  {
 	}
 
 	dialInfo := &mgo.DialInfo{
-		Addrs:          []string{conf.MONGODB.Host},
-		Username:       conf.MONGODB.User,
-		Password:       conf.MONGODB.Password,
+		Addrs:          []string{conf.Mongodb.Host},
+		Username:       conf.Mongodb.User,
+		Password:       conf.Mongodb.Password,
 	}
 
 	mongo :=initDB(dialInfo)

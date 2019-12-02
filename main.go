@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/yaml.v2"
+	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"location-record/middleware"
 	"location-record/model"
@@ -41,6 +43,98 @@ func initDB(info *mgo.DialInfo) *mgo.Session {
 		panic("db init failed")
 	}
 	return mongo
+}
+
+func jwtAuth() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		token := context.Request.Header.Get("Authorization")
+		if token == "" {
+			context.JSON(http.StatusUnauthorized, gin.H{
+				"status": 401,
+				"msg":    "uncaught authorization token",
+			})
+			context.Abort()
+			return
+		}
+
+		j := NewJWT()
+		claims, err := j.parseToken(token)
+		if err != nil {
+			if err == TokenExpired {
+				context.JSON(http.StatusUnauthorized, gin.H{
+					"status": 401,
+					"msg":    "token is expired",
+				})
+			}
+			context.JSON(http.StatusUnauthorized, gin.H{
+				"status": 401,
+				"msg": err.Error(),
+			})
+		}
+		context.Set("claims", claims)
+		context.Next()
+	}
+}
+
+type JWT struct {
+	SingingKey []byte
+}
+
+var (
+	TokenExpired error = errors.New("Token is expired")
+	TokenMalformed error = errors.New("token is malformed")
+	TokenInvalid error = errors.New("token is invalid")
+	SignKey string = ""
+)
+
+type CustomChains struct {
+	UID int `json:"uid"`
+	jwt.StandardClaims
+}
+
+func NewJWT() *JWT {
+	return &JWT{
+		[]byte(getSignKey()),
+	}
+}
+
+func getSignKey() string {
+	return SignKey
+}
+
+func setSignKey(key string) string {
+	SignKey = key
+	return SignKey
+}
+
+func (j *JWT) CreateToken(clains CustomChains) (string, error)  {
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, clains)
+	return token.SignedString(j.SingingKey)
+}
+
+func (j *JWT) parseToken(tokenString string)(*CustomChains, error)  {
+	token ,err := jwt.ParseWithClaims(tokenString, &CustomChains{}, func(token *jwt.Token) (i interface{}, err error) {
+		return j.SingingKey, nil
+	})
+
+	if err != nil {
+		if validationErr, ok := err.(*jwt.ValidationError); ok {
+			if validationErr.Errors & jwt.ValidationErrorMalformed != 0 {
+				return nil, TokenMalformed
+			}else if validationErr.Errors & jwt.ValidationErrorExpired != 0 {
+				return nil, TokenExpired
+			} else {
+				return nil, TokenInvalid
+			}
+		}
+		
+	}
+
+	if claims, ok := token.Claims.(*CustomChains); ok && token.Valid {
+		return claims, nil
+	}
+	return nil,TokenInvalid
+
 }
 
 func main()  {

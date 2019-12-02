@@ -1,4 +1,5 @@
-### Location record
+# locationRecord-go
+location record server by golang
 
 ### Api
 * /auth/wechat 微信登录

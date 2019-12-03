@@ -30,7 +30,7 @@ func (app *Application) Run()  {
 	_ = http.ListenAndServe(":8000", app.App)
 }
 
-func app()  {
+func main()  {
 	config := Config{}
 	file, err := ioutil.ReadFile(".env.yaml")
 	if err != nil {

@@ -138,7 +138,7 @@ func (j *JWT) parseToken(tokenString string)(*CustomChains, error)  {
 
 }
 
-func main()  {
+func __main()  {
 
 // ==============================================
 

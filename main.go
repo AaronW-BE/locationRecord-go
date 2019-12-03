@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -157,7 +158,17 @@ func main()  {
 
 	conf := Config{}
 
-	file, err := ioutil.ReadFile(".env.yaml")
+	var configFilepath string
+
+	flag.StringVar(&configFilepath, "conf", "", "配置文件路径")
+
+	flag.Parse()
+
+	if configFilepath == "" {
+		panic("请指定配置文件位置(.env.yaml)")
+	}
+
+	file, err := ioutil.ReadFile(configFilepath)
 
 	if err != nil {
 		panic(err)

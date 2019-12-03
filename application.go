@@ -22,7 +22,7 @@ func New() *Application  {
 	return &Application{}
 }
 
-func main()  {
+func app()  {
 	application := New()
 
 	config := Config{}

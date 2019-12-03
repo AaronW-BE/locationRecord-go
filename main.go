@@ -28,20 +28,6 @@ type User struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
-
-type Config struct {
-	Mongodb struct{
-		User string `yaml:"user"`
-		Password string `yaml:"password"`
-		Host string `yaml:"host"`
-		Port string `yaml:"port"`
-	}
-	Jwt struct{
-		Secret string `yaml:"secret"`
-		ExpireIn int `yaml:"expire_in"`
-	}
-}
-
 func initDB(info *mgo.DialInfo) *mgo.Session {
 	mongo, err := mgo.DialWithInfo(info)
 	if err != nil {
@@ -151,7 +137,7 @@ func (j *JWT) parseToken(tokenString string)(*CustomChains, error)  {
 
 }
 
-func main()  {
+func main0()  {
 
 // ==============================================
 

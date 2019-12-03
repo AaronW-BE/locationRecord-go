@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net/http"
 )
 
 type Application struct {
@@ -16,15 +17,20 @@ type Application struct {
 
 func (app *Application) Init(config Config)  {
 	app.Config = config
+	app.App = gin.Default()
 }
 
-func New() *Application  {
-	return &Application{}
+func New(config Config) *Application  {
+	application := &Application{}
+	application.Init(config)
+	return application
+}
+
+func (app *Application) Run()  {
+	_ = http.ListenAndServe(":8000", app.App)
 }
 
 func main()  {
-	application := New()
-
 	config := Config{}
 	file, err := ioutil.ReadFile(".env.yaml")
 	if err != nil {
@@ -34,7 +40,6 @@ func main()  {
 	if configErr != nil{
 		panic(configErr)
 	}
-
-	application.Init(config)
-
+	application := New(config)
+	application.Run()
 }

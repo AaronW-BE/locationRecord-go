@@ -1,4 +1,4 @@
-package main
+package types
 
 type Config struct {
 	Application struct{
@@ -9,6 +9,7 @@ type Config struct {
 		Password string `yaml:"password"`
 		Host string `yaml:"host"`
 		Port string `yaml:"port"`
+		Timeout int `yaml:"timeout"`
 	}
 	Jwt struct{
 		Secret string `yaml:"secret"`

@@ -18,13 +18,13 @@ package main
 //	"time"
 //)
 //
-//type Location struct {
+//types Location struct {
 //	Lat string `form:"lat" json:"lat" binding:"required"`
 //	Lng string `form:"lng" json:"lng" binding:"required"`
 //	City string `form:"city" json:"city" binding:"required"`
 //}
 //
-//type User struct {
+//types User struct {
 //	Username string `form:"username" json:"username" binding:"required"`
 //	Password string `form:"password" json:"password" binding:"required"`
 //}
@@ -77,7 +77,7 @@ package main
 //	}
 //}
 //
-//type JWT struct {
+//types JWT struct {
 //	SingingKey []byte
 //}
 //
@@ -88,7 +88,7 @@ package main
 //	SignKey string = ""
 //)
 //
-//type CustomChains struct {
+//types CustomChains struct {
 //	UID string
 //	jwt.StandardClaims
 //}
